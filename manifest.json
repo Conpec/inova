@@ -1,0 +1,7 @@
+{
+  "name": "inova",
+  "short_name": "inova",
+  "description": "Website para visualização de gráficos da inova",
+  "start_url": "/",
+  "display": "standalone"
+}
