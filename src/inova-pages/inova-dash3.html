@@ -1,6 +1,6 @@
 <link rel="import" href="../inova-components/inova-chart.html">
 
-<dom-module id="inova-dash">
+<dom-module id="inova-dash3">
 	<template>
 	<style is="custom-style" include="iron-flex iron-flex-factors">
 		:host {
@@ -8,17 +8,16 @@
 			position: relative;
 		}
 	</style>
-
 	<inova-chart 
 		title="Exemplo 1" 
-		subtitle="" 
-		type="spline" 
+		type="pie" 
 		x-label="Clientes" 
 		y-label="Satisfação">
 	</inova-chart>
 	<inova-chart 
 		title="Exemplo 2" 
-		type="pie" 
+		subtitle="" 
+		type="spline" 
 		x-label="Clientes" 
 		y-label="Satisfação">
 	</inova-chart>
@@ -39,7 +38,7 @@
 
 	<script>
 	Polymer({
-		is: 'inova-dash',
+		is: 'inova-dash3',
 
 		behaviors: [
 		],

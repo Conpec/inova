@@ -1,5 +1,7 @@
 {
     "": "inova-home",
-    "dash": "inova-dash",
+    "dash1": "inova-dash1",
+    "dash2": "inova-dash2",
+    "dash3": "inova-dash3",
     "login": "inova-login"
 }
