@@ -1,0 +1,43 @@
+<link rel="import" href="../../bower_components/zero-md/zero-md.html">
+<link rel="stylesheet" href="../../bower_components/zero-md/highlight-themes/coy.css">
+<link rel="stylesheet" href="../../bower_components/zero-md/markdown-themes/default.css">
+
+<link rel="import" href="../inova-components/inova-logo.html">
+
+<dom-module id="inova-home">
+	<template>
+	<style is="custom-style" include="iron-flex iron-flex-factors">
+		:host{
+			display: block;
+			position: relative;
+		}
+		hr {
+			border-color: var(--accent-color);
+		}
+	</style>
+
+	<app-toolbar>
+		<inova-logo></inova-logo>
+		<h1>INOVA INDÚSTRIAS</h1>
+	</app-toolbar>
+
+	<hr>
+	
+	<zero-md file="../../res/pages/home.md">
+        <div class="md-html"></div>
+	</zero-md>
+
+	</template>
+
+	<script>
+	Polymer({
+		is: 'inova-home',
+
+		behaviors: [
+		],
+
+		properties: {
+		}
+	})
+	</script>
+</dom-module>

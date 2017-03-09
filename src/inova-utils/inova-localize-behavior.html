@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<script>
+
+window.Inova = window.Inova || {}
+
+/** @polymerBehavior Inova.AppLocalizeBehaviorImpl */
+Inova.AppLocalizeBehaviorImpl = {
+
+	properties: {
+		/**
+		 * Private
+		 * The language used for translation.
+		 * Portuguese by default 
+		 */
+		language: {
+			type: String,
+			value: 'pt'
+		},
+		/**
+		 * The path to the dictionary of localized messages. The format is the
+		 * same as the `resources` array, only saved as an external json file.
+		 * Note that using a path will populate the `resources` property, and override
+		 * the previous data.
+		 */
+		file: {
+			type: String
+		}
+	},
+
+	attached: function() {
+		this.loadResources(this.resolveUrl('../../res/locales/' + this.file + '.json'))
+	}
+}
+
+/** @polymerBehavior Inova.AppLocalizeBehavior */
+Inova.AppLocalizeBehavior = [Polymer.AppLocalizeBehavior, Inova.AppLocalizeBehaviorImpl]
+
+</script>

@@ -1,0 +1,58 @@
+<dom-module id="inova-logo">
+	<template>
+
+		<style>
+			:host{
+				height: 100%;
+				text-align: center;
+			}
+			.logo-height {
+                margin-right: 30%;
+				position: relative;
+					top: 15%;
+				height: 70%;
+			}
+			.logo-width {
+				margin: 12% 0;
+				width: 100%;
+			}
+            .bg-white {
+                background-color: var(--text-primary-color);
+                border-radius: 100%;
+                padding: 3px;
+            }
+		</style>
+
+		<img class$="logo-[[fill]]" src="[[src]]" />
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-logo',
+
+			properties: {
+				white: {
+					type: Boolean,
+					value: false
+				},
+				src: {
+					type: String,
+					computed: '_mountSource(white)'
+				},
+				fill: {
+					type: String,
+					value: 'height'
+				}
+			},
+
+			_mountSource: function(white){
+				if(white){
+					return '../../res/img/logo/logo-white.png'
+				}else {
+					return '../../res/img/logo/logo.png'
+				}
+			}
+
+		})
+	</script>
+</dom-module>

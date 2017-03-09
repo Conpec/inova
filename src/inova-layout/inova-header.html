@@ -1,0 +1,107 @@
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+
+<link rel="import" href="../inova-components/inova-logo.html">
+
+<dom-module id="inova-header">
+	<template>
+	<style is="custom-style" include="iron-flex iron-flex-factors">
+		:host {
+			display: block;
+			position: relative;
+		}
+		app-header {
+			background-color: var(--default-primary-color);
+			color: var(--text-primary-color);
+		}
+		app-drawer {
+			z-index: 10;
+			--app-drawer-content-container: {
+				background-color: var(--dark-primary-color);
+			};
+		}
+		.drawer-option{
+			background-color: var(--default-primary-color);
+		}
+		.drawer-option, .drawer-title{
+			transition: background .3s;
+		}
+		.drawer-option:hover, .drawer-title:hover{
+			opacity: 0.4;
+		}
+		.drawer-option.iron-selected {
+			opacity: 0.5;
+		}
+		iron-icon{
+			cursor: pointer;
+		}
+		a {
+			@apply(--layout-horizontal);
+			@apply(--layout-center-center);
+
+			height: 100%;
+			width: 100%;
+			text-decoration: none;
+			color: var(--text-primary-color);
+		}
+	</style>
+
+	<app-header-layout fullbleed>
+		<app-header shadow fixed>
+			<app-toolbar sticky>
+			</app-toolbar>
+		</app-header>
+	</app-header-layout>
+
+	<app-drawer-layout fullbleed>
+		<app-drawer opened>
+			<app-toolbar class="drawer-title layout horizontal">
+				<a href="/" tabindex="-1">
+					<inova-logo white></inova-logo>
+					<p>[[localize('title')]]</p>
+				</a>
+			</app-toolbar>
+			<iron-selector attr-for-selected="name" selected="{{page}}">
+				<app-toolbar class="drawer-option" name="questionario">
+					<a href="/dash" tabindex="-1">[[localize('data1-title')]]</a>
+				</app-toolbar>
+				<app-toolbar class="drawer-option" name="blog">
+					<a href="/dash" tabindex="-1">[[localize('data2-title')]]</a>
+				</app-toolbar>
+				<app-toolbar class="drawer-option" name="contato">
+					<a href="/dash" tabindex="-1">[[localize('data3-title')]]</a>
+				</app-toolbar>
+			</iron-selector>
+		</app-drawer>
+	</app-drawer-layout>
+	</template>
+
+	<script>
+	Polymer({
+		is: 'inova-header',
+
+		behaviors: [
+			Inova.AppLocalizeBehavior
+		],
+
+		properties: {
+			page: {
+				type: String,
+				notify: false,
+			},
+			file: {
+				value: 'pages'
+			}
+		}
+	})
+	</script>
+</dom-module>

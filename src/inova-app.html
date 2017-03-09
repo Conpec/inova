@@ -1,4 +1,16 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/font-roboto/roboto.html">
+
+<link rel="import" href="../bower_components/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<link rel="import" href="../bower_components/ce-page-manager/ce-page-manager.html">
+
+<link rel="import" href="inova-utils/inova-localize-behavior.html">
+
+<link rel="import" href="inova-layout/inova-header.html">
+<link rel="import" href="inova-layout/inova-content.html">
+<!link rel="import" href="inova-layout/inova-footer.html">
 
 <dom-module id="inova-app">
 	<template>
@@ -9,7 +21,7 @@
 				--light-primary-color:      #B2DFDB;
 				--text-primary-color:       #FFFFFF;
 				--accent-color:             #607D8B;
-				--primary-background-color: #B2DFDB;
+				--primary-background-color: #FFFFFF;
 				--primary-text-color:       #212121;
 				--secondary-text-color:     #757575;
 				--disabled-text-color:      #BDBDBD;
@@ -34,9 +46,32 @@
 			}
 			:host {
 				display: block;
+				font-family: 'Roboto', sans-serif;
+			}
+			inova-header{
+				z-index: 10;
+			}
+			inova-content{
+				z-index: 0;
+			}
+			inova-footer{
+				z-index: 0;
 			}
 		</style>
-		<h2>Hello [[prop1]]</h2>
+		
+		<inova-header page="[[page]]"></inova-header>
+		<inova-content>
+			<ce-page-manager
+				id="pagemanager"
+				site-map="/src/sitemap.json"
+				pages-dir="/src/inova-pages"
+				entry-animation="slide-from-left-animation"
+				exit-animation="fade-out-animation"
+				on-page-change="_updatePage">
+			</ce-page-manager>
+		</inova-content>
+		<!--inova-footer page="[[page]]"></inova-footer-->
+
 	</template>
 
 	<script>
@@ -45,12 +80,16 @@
 			is: 'inova-app',
 
 			properties: {
-				prop1: {
-					type: String,
-					value: 'inova-app',
+				page: {
+					type: String
 				},
 			},
-
+			
+			_updatePage: function(e){
+				//setting page property
+				page = e.detail.path.split('/')[1] || '__home__'
+				this.set('page', page)
+			},
 		});
 	</script>
 </dom-module>
