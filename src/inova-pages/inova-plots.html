@@ -1,0 +1,90 @@
+<link rel="import" href="../../bower_components/chart-elements/chart-elements.html">
+<link rel="import" href="../inova-components/inova-chart-counter.html">
+<link rel="import" href="../inova-components/inova-chart-date.html">
+
+<link rel="import" href="../inova-components/inova-counter.html">
+<link rel="import" href="../inova-components/inova-count.html">
+
+<dom-module id="inova-plots">
+	<template>
+	<style is="custom-style" include="iron-flex iron-flex-factors">
+		:host {
+			display: block;
+			position: relative;
+		}
+	</style>
+
+	<ce-json-file
+		path="/res/plots.json"
+		json="{{plots}}">
+	</ce-json-file>
+
+	<inova-counter
+		page="[[page]]" 
+		text="[[localize('active')]]" 
+		params='{"active": true}'>
+	</inova-counter>
+
+	<br>
+
+	<div id="plots_container"></div>
+
+	</template>
+
+	<script>
+	Polymer({
+		is: 'inova-plots',
+
+		behaviors: [
+			Inova.AppLocalizeBehavior,
+			Inova.AppConfigBehavior,
+			Inova.AppTokenBehavior
+		],
+
+		properties: {
+			file: {
+				value: 'plots'
+			},
+			page: {
+				type: String,
+				computed: '_computePage(query)' 
+			},
+			plots: Object,
+		},
+
+		observers: [
+			'_updatePlots(localize,page,plots)'
+		],
+
+		_updatePlots: function(localize, page, plots){
+			this.$.plots_container.innerHTML = ""
+			var plot = plots[page]
+			for(var i = 0; i < plot.length; i++){
+				if(plot[i].type == 'counter'){
+					var data = plot[i].data
+					for(var j = 0; j < data.length; j++){
+						var el = document.createElement('inova-counter')
+						el.page = page
+						el.text = localize(data[j].text)
+						el.params = data[j].params
+						this.$.plots_container.appendChild(el)
+					}
+				}
+				else{
+					var el = document.createElement('inova-chart-' + plot[i].mode)
+					el.page = page
+					el.text = localize(plot[i].text)
+					el.data = plot[i].data
+					el.type = plot[i].type
+					this.$.plots_container.appendChild(el)
+				}
+			}
+			
+		},
+
+		_computePage: function(query){
+			return query[0]
+		},
+	})
+	</script>
+</dom-module>

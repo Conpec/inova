@@ -1,5 +1,5 @@
-Aqui é a página que contém a explicação do funcionamento do sistema.
+Esta página contém uma introdução da inova e do sistema
 
-## Visualizando gráficos
+## Como utilizar o site
 
-Para visualizar grádicos basta clicar na opção desejada na lista ao lado.
+Aqui contém a explicação sobre o site

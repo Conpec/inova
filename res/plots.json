@@ -1,0 +1,80 @@
+{
+    "activity": [
+        {
+            "title": "",
+            "mode": "counter",
+            "type": "pie",
+            "data": [
+                {
+                    "text": "comunication_confirm",
+                    "params": {
+                        "comunicationType": 0
+                    }
+                },
+                {
+                    "text": "comunication_auto",
+                    "params": {
+                        "comunicationType": 1
+                    }
+                },
+                {
+                    "text": "comunication_manual",
+                    "params": {
+                        "comunicationType": 2
+                    }
+                }
+            ]
+        },
+        {
+            "text": "active",
+            "mode": "date",
+            "type": "line",
+            "data": {
+                "params": {},
+                "select": "lastChange"
+            }
+        }
+    ],
+    "schedule": [
+        {
+            "text": "",
+            "mode": "counter",
+            "type": "doughnut",
+            "data": [
+                {
+                    "text": "situation_waiting",
+                    "params": {
+                        "situation": 30
+                    }
+                },
+                {
+                    "text": "situation_sent",
+                    "params": {
+                        "situation": 40
+                    }
+                },
+                {
+                    "text": "situation_returned",
+                    "params": {
+                        "situation": 50
+                    }
+                },
+                {
+                    "text": "situation_canceled",
+                    "params": {
+                        "situation": 70
+                    }
+                }
+            ]
+        },
+        {
+            "text": "active",
+            "mode": "date",
+            "type": "line",
+            "data": {
+                "params": {},
+                "select": "date"
+            }
+        }
+    ]
+}

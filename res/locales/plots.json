@@ -1,0 +1,18 @@
+{
+    "pt": {
+        "active": "Ativas",
+
+        "comunication_confirm": "Confirmado pelo Usuário",
+        "comunication_auto": "Sincronismo Automático",
+        "comunication_manual": "Sincronismo Manual",
+
+        "situation_waiting": "Aguardando envio",
+        "situation_sent": "Em campo",
+        "situation_returned": "Retornada de campo",
+        "situation_canceled": "Cancelada",
+
+        "date-initial": "Data inicial",
+        "date-final": "Data final",
+        "date-quantity": "Quantidade de pontos"
+    }
+}

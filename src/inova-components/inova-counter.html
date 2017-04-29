@@ -1,0 +1,43 @@
+<dom-module id="inova-counter">
+	<template>
+
+		<style>
+            :host{
+                display: inline-block;
+            }
+            div {
+                display: inline-block;
+                padding: 0 1rem;
+
+                border-bottom: 1px solid var(--default-primary-color);
+                color: var(--dark-primary-color);
+            }
+		</style>
+
+        <inova-count
+            page="[[page]]"
+            params="[[params]]"
+            counter="{{counter}}">
+        </inova-count>
+
+        <div>
+            <h1>[[text]]: [[counter]]</h1>
+        </div>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-counter',
+
+            behaviors: [
+            ],
+
+			properties: {
+                page: String,
+                params: Object,
+                text: String
+			}
+
+		})
+	</script>
+</dom-module>

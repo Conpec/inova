@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="../../bower_components/zero-md/markdown-themes/default.css">
 
 <link rel="import" href="../inova-components/inova-logo.html">
+<link rel="import" href="../inova-components/inova-block.html">
 
 <dom-module id="inova-home">
 	<template>
@@ -23,9 +24,18 @@
 
 	<hr>
 	
-	<zero-md file="../../res/pages/home.md">
-        <div class="md-html"></div>
-	</zero-md>
+	<template is="dom-if" if="{{token}}">
+		<zero-md file="../../res/pages/home.md">
+			<div class="md-html"></div>
+		</zero-md>
+	</template>
+
+	<template is="dom-if" if="{{!token}}">
+		<zero-md file="../../res/pages/land.md">
+			<div class="md-html"></div>
+		</zero-md>
+	</template>
+
 
 	</template>
 
@@ -34,6 +44,7 @@
 		is: 'inova-home',
 
 		behaviors: [
+			Inova.AppTokenBehavior
 		],
 
 		properties: {

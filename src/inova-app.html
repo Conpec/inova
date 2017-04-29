@@ -2,15 +2,22 @@
 <link rel="import" href="../bower_components/font-roboto/roboto.html">
 
 <link rel="import" href="../bower_components/neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
 
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-request.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
+<link rel="import" href="../bower_components/ce-json-file/ce-json-file.html">
 <link rel="import" href="../bower_components/ce-page-manager/ce-page-manager.html">
 
 <link rel="import" href="inova-utils/inova-localize-behavior.html">
+<link rel="import" href="inova-utils/inova-config-behavior.html">
+<link rel="import" href="inova-utils/inova-token-behavior.html">
 
 <link rel="import" href="inova-layout/inova-header.html">
 <link rel="import" href="inova-layout/inova-content.html">
-<!link rel="import" href="inova-layout/inova-footer.html">
 
 <dom-module id="inova-app">
 	<template>
@@ -70,7 +77,6 @@
 				on-page-change="_updatePage">
 			</ce-page-manager>
 		</inova-content>
-		<!--inova-footer page="[[page]]"></inova-footer-->
 
 	</template>
 
@@ -79,17 +85,29 @@
 
 			is: 'inova-app',
 
+			behaviors: [
+				Inova.AppTokenBehavior
+			],
+
 			properties: {
 				page: {
 					type: String
 				},
+				token: {
+					type: String
+				}
 			},
 			
 			_updatePage: function(e){
 				//setting page property
-				page = e.detail.path.split('/')[1] || '__home__'
+				page = e.detail.path.substr(e.detail.path.indexOf('/') + 1) || '__home__'
+				if(!this.token && page != '__home__'){
+					window.location = '/'
+				}
 				this.set('page', page)
 			},
 		});
 	</script>
 </dom-module>
+
+<!--script src="https://cdn.rawgit.com/RubaXa/wormhole/c3374e4e/wormhole.js"></script-->

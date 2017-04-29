@@ -1,0 +1,130 @@
+<dom-module id="inova-chart-counter">
+	<template>
+
+		<style>
+			:host{
+				display: inline-block;
+                position: relative;
+				margin: 2rem;
+				width: 30%;
+			}
+			chart-pie, chart-doughnut{
+				width: 100%
+			}
+		</style>
+
+		<div id="chart"></div>
+
+		<template is="dom-if" if="[[equals(type, 'doughnut')]]" restamp>
+			<chart-doughnut data="[[chartData]]"></chart-doughnut>
+		</template>
+		<template is="dom-if" if="[[equals(type, 'pie')]]" restamp>
+			<chart-pie data="[[chartData]]"></chart-pie>
+		</template>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-chart-counter',
+
+			behaviors: [
+				Inova.AppLocalizeBehavior,
+				Inova.AppConfigBehavior,
+				Inova.AppTokenBehavior
+			],
+			
+			properties: {
+				file: {
+					value: 'plots'
+				},
+				page: String, 
+				data: Object,
+				chartData: {
+					type: Object,
+					value: {
+						labels: [],
+						datasets: [{
+							data: [],
+							backgroundColor: [],
+							hoverBackgroundColor: []
+						}]
+					},
+				},
+				type: String
+			},
+
+			observers: [
+				'_computeChartData(localize,config,token,page,data)'
+			],
+
+			_computeChartData: async function(localize, config, token, page, data){
+				var r = 0
+				var g = 189
+				var b = 183
+
+				if(this.chartData.labels.length != 0){
+					this.chartData = {
+						labels: [],
+						datasets: [{
+							data: [],
+							backgroundColor: [],
+							hoverBackgroundColor: []
+						}]
+					}
+				}
+				for(var i = 0; i < data.length; i++){
+					var request = document.createElement('iron-request')
+					var xhr = await request.send({
+						url: config.url + '/api/' + token + '/' + page + '.xml?' + this._queryString(data[i].params),
+						handleAs: 'json'
+					})
+
+					this.push('chartData.labels', localize(data[i].text))
+					this.push('chartData.datasets.0.data', Number(xhr.response.result.size))
+
+					var color_mod = Math.pow(0.7, i)
+					this.push('chartData.datasets.0.backgroundColor', 'rgb(' + Math.round(107*color_mod) + ',' + Math.round(107*color_mod) + ',' + Math.round(107*color_mod) + ')')
+					this.push('chartData.datasets.0.hoverBackgroundColor', 'rgb(' + Math.round(137*color_mod) + ',' + Math.round(137*color_mod) + ',' + Math.round(137*color_mod) + ')')
+				}
+				for(var i = 0; i < data.length; i++){
+					var color_mod = Math.pow(0.7, i)
+					this.set('chartData.datasets.0.backgroundColor.' + i, 'rgb(' + r + ',' + Math.round(g*color_mod) + ',' + Math.round(b*color_mod) + ')')
+					this.set('chartData.datasets.0.hoverBackgroundColor.' + i, 'rgb(' + (30+r) + ',' + Math.round((30+g)*color_mod) + ',' + Math.round((30+b)*color_mod) + ')')
+				}
+			},
+
+			_queryString: function(params) {
+				var queryParts = [];
+				var param;
+				var value;
+
+				for (param in params) {
+					value = params[param];
+					param = window.encodeURIComponent(param);
+
+					if (Array.isArray(value)) {
+					for (var i = 0; i < value.length; i++) {
+						queryParts.push(param + '=' + window.encodeURIComponent(value[i]));
+					}
+					} else if (value !== null) {
+					queryParts.push(param + '=' + window.encodeURIComponent(value));
+					} else {
+					queryParts.push(param);
+					}
+				}
+
+				return queryParts.join('&');
+			},
+
+			_padZeroes: function(num, size) {
+				var s = Math.round(num)+"";
+				while (s.length < size) s = "0" + s;
+				return s;
+			},
+
+			equals: function(a, b){
+				return a == b
+			}
+		})
+	</script>
+</dom-module>

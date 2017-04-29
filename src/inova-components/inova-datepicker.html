@@ -1,0 +1,59 @@
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-date-picker/paper-date-picker.html">
+
+<dom-module id="inova-datepicker">
+	<template>
+	<style is="custom-style" include="iron-flex iron-flex-factors">
+		:host{
+            height: 4rem;
+            border-radius: 3px;
+            background-color: var(--default-primary-color);
+		}
+        paper-button{
+            width: 100%;
+            height: 100%;
+            color: var(--text-primary-color);
+        }
+	</style>
+
+	<paper-button on-click="_openDialog">
+        <content></content>
+	</paper-button>
+
+    <paper-dialog 
+        entry-animation="scale-up-animation"
+        exit-animation="fade-out-animation"
+        opened="{{_isDialogOpen}}">
+
+        <paper-date-picker date="{{date}}"></paper-date-picker>
+        
+    </paper-dialog>
+
+	</template>
+
+	<script>
+	Polymer({
+		is: 'inova-datepicker',
+
+		behaviors: [
+		],
+
+		properties: {
+            text: String,
+            date: {
+                type: String,
+                notify: true
+            },
+            _isDialogOpen: {
+                type: Boolean,
+                value: false
+            }
+		},
+
+        _openDialog: function(){
+            this._isDialogOpen = true
+        }
+	})
+	</script>
+</dom-module>

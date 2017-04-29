@@ -1,0 +1,55 @@
+<dom-module id="inova-count">
+	<template>
+
+        <iron-ajax id="ajaxActives"
+            url="[[_url]]"
+            params="[[params]]"
+            handle-as="json"
+            method="get"
+            last-response="{{response}}"
+            auto>
+        </iron-ajax>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-count',
+
+            behaviors: [
+                Inova.AppConfigBehavior,
+                Inova.AppTokenBehavior
+            ],
+
+			properties: {
+                _url: {
+                    type: String,
+                    computed: '_computeUrl(config,token,page)'
+                },
+                page: String,
+                params: Object,
+                response: {
+                    type: Object,
+                    value: {
+                        result: {
+                            size: 0
+                        }
+                    }
+                },
+                counter: {
+                    type: Number,
+                    computed: '_computedCounter(response)',
+                    notify: true
+                }
+			},
+
+            _computeUrl: function(config, token, page){
+                return config.url + '/api/' + token + '/' + page + '.xml'
+            },
+            
+            _computedCounter: function(response){
+                return response.result.size
+            }
+
+		})
+	</script>
+</dom-module>

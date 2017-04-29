@@ -1,0 +1,240 @@
+<link rel="import" href="../../bower_components/chart-elements/chart-elements.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../inova-components/inova-datepicker.html">
+
+<dom-module id="inova-chart-date">
+	<template>
+
+		<style is="custom-style" include="iron-flex iron-flex-factors">
+			:host{
+				display: inline-block;
+                position: relative;
+				margin: 2rem;
+				width: 80%;
+			}
+			chart-line, chart-bar{
+				width: 100%;
+			}
+			.buttons-container{
+				width: 100%;
+			}
+			.buttons-container > *{
+				margin: 5px;
+			}
+			.disabled > *{
+				background-color: rgba(107, 107, 107, 0.5);
+			}
+			.date-quantity-picker{
+				border-radius: 3px;
+				height: 4rem;
+				padding: 0 0.5rem;
+
+				background-color: var(--default-primary-color);
+			}
+			.date-quantity-picker > paper-input{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+
+		<div class$="buttons-container layout horizontal [[_disabledClass]]">
+			<inova-datepicker date="{{initialDate}}" class="flex">
+				<b>[[localize('date-initial')]]</b>: [[_formatDate(initialDate)]]
+			</inova-datepicker>
+			<inova-datepicker date="{{finalDate}}" class="flex">
+				<b>[[localize('date-final')]]</b>: [[_formatDate(finalDate)]]
+			</inova-datepicker>
+			<div class="date-quantity-picker flex">
+				<paper-input 
+					type="number"
+					min="2" max="60" step="1" 
+					value="{{numberDates}}" 
+					label="[[localize('date-quantity')]]"></paper-input>
+			</div>
+		</div>
+			
+		<div id="chart"></div>
+		
+		<template is="dom-if" if="[[equals(type, 'line')]]" restamp>
+			<chart-line data="[[chartData]]"></chart-line>
+		</template>
+		<template is="dom-if" if="[[equals(type, 'bar')]]" restamp>
+			<chart-bar data="[[chartData]]"></chart-bar>
+		</template>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-chart-date',
+
+			behaviors: [
+				Inova.AppLocalizeBehavior,
+				Inova.AppConfigBehavior,
+				Inova.AppTokenBehavior
+			],
+			
+			properties: {
+				file: {
+					value: 'plots'
+				},
+				page: String, 
+				data: Object,
+				chartData: {
+					type: Object,
+					value: {
+						labels: [],
+						datasets: [{
+							data: [],
+							backgroundColor: [],
+							hoverBackgroundColor: []
+						}]
+					},
+				},
+				type: String,
+				initialDate: {
+					type: String,
+					value: function(){
+						return new Date((new Date()).getTime() - 2592000000)
+					}
+				},
+				finalDate: {
+					type: String,
+					value: function(){
+						return new Date()
+					}
+				},
+				numberDates: {
+					type: Number,
+					value: 30
+				},
+				_requestInstances: {
+					type: Number,
+					value: 0
+				},
+				_disabledClass: {
+					type: String,
+					value: ""
+				}
+			},
+
+			observers: [
+				'_computeChartData(localize,config,token,page,data,initialDate,finalDate,numberDates)'
+			],
+
+			_computeChartData: async function(localize, config, token, page, data, initialDate, finalDate, numberDates){
+				// Workaround to cancel async request
+				this._requestInstances++
+
+				//disable colors
+				this._disabledClass = 'disabled'
+
+				var initial_date = new Date(initialDate)
+				var final_date = new Date(finalDate)
+				var interval = (final_date - initial_date)/numberDates
+				var initial_data = []
+				var labels = []
+
+				for(var i = 0; i < numberDates; i++){
+					initial_data.push(0)
+					var cur_date = new Date(initial_date.getTime() + (interval*i))
+					labels.push(cur_date.getDate() + '/' + cur_date.getMonth() + '/' + cur_date.getFullYear())
+				} 
+
+				this.chartData = {
+					labels: labels,
+					datasets: [{
+						data: initial_data,
+						label: this.text,
+						backgroundColor: 'rgba(107, 107, 107, 0.2)',
+						borderColor: 'rgba(107, 107, 107, 1)',
+						borderWidth: 1,
+						pointBackgroundColor: 'rgba(107, 107, 107, 0.5)',
+						pointBorderColor: 'rgba(107, 107, 107, 1)',
+						pointHoverBackgroundColor: 'rgba(107, 107, 107, 1)',
+						pointHoverBorderColor: 'rgba(107, 107, 107, 1)'
+					}]
+				}
+				
+				data.params.initialDate = this._formatDate(initial_date)
+				data.params.finalDate = this._formatDate(final_date)
+
+				var request = document.createElement('iron-request')
+				var xhr = await request.send({
+					url: config.url + '/api/' + token + '/' + page + '.xml?' + this._queryString(data.params),
+					handleAs: 'json'
+				})
+				// Workaround to cancel async request
+				if(this._requestInstances > 1){6
+						this._requestInstances--
+						return
+				}
+
+				// Loop through found entries (request each again)
+				if(xhr.response.result.entries){
+					var entry = xhr.response.result.entries.entry
+					for(var i = 0; i < entry.length; i++){
+						var request = document.createElement('iron-request')
+						xhr = await request.send({
+							url: config.url + '/api/' + token + entry[i]['@link'],
+							handleAs: 'json'
+						})
+						// Workaround to cancel async request
+						if(this._requestInstances > 1){
+							 this._requestInstances--
+							 return
+						}
+						var date = new Date(xhr.response[page][data.select]).getTime()
+						var column = Math.floor((date - initial_date)/interval)
+						this.set('chartData.datasets.0.data.' + column, this.chartData.datasets[0].data[column]+1)
+					}
+				}else{
+					//TODO: avisar que não tem nada nesse período
+				}
+				this.set('chartData.datasets.0.backgroundColor', 'rgba(0, 121, 107, 0.2)')
+				this.set('chartData.datasets.0.borderColor', 'rgba(0, 121, 107, 1)')
+				this.set('chartData.datasets.0.pointBackgroundColor', 'rgba(0, 121, 107, 0.5)')
+				this.set('chartData.datasets.0.pointBorderColor', 'rgba(0, 121, 107, 1)')
+				this.set('chartData.datasets.0.pointHoverBackgroundColor', 'rgba(0, 121, 107, 1)')
+				this.set('chartData.datasets.0.pointHoverBorderColor', 'rgba(0, 121, 107, 1)')
+
+				//enable colors
+				this._disabledClass = ''
+
+				// Workaround to cancel async request
+				this._requestInstances--
+			},
+
+			_queryString: function(params) {
+				var queryParts = [];
+				var param;
+				var value;
+
+				for (param in params) {
+					value = params[param];
+					param = window.encodeURIComponent(param);
+
+					if (Array.isArray(value)) {
+					for (var i = 0; i < value.length; i++) {
+						queryParts.push(param + '=' + window.encodeURIComponent(value[i]));
+					}
+					} else if (value !== null) {
+						queryParts.push(param + '=' + window.encodeURIComponent(value));
+					} else {
+						queryParts.push(param);
+					}
+				}
+
+				return queryParts.join('&');
+			},
+
+			_formatDate: function(date_str){
+				var date = new Date(date_str)
+				return date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate()
+			},
+
+			equals: function(a, b){
+				return a == b
+			}
+		})
+	</script>
+</dom-module>

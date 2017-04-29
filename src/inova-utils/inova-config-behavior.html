@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/ce-json-file/ce-json-file-behavior.html">
+
+<script>
+
+window.Inova = window.Inova || {}
+
+/** @polymerBehavior Inova.AppConfigBehaviorImpl */
+Inova.AppConfigBehaviorImpl = {
+
+	properties:{
+		path: {
+			value: '../../config/local.json'
+		},
+		config: {
+			type: Object,
+			computed: '_computeConfig(json)',
+			notify: true
+		}
+	},
+
+	_computeConfig: function() {
+		return this.json
+	}
+
+}
+
+/** @polymerBehavior Inova.AppConfigBehavior */
+Inova.AppConfigBehavior = [CustomElements.AppJsonBehavior, Inova.AppConfigBehaviorImpl]
+
+</script>

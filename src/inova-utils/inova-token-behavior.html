@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<script>
+
+window.Inova = window.Inova || {}
+
+Inova.AppTokenBehavior = {
+
+	properties: {
+		/**
+		 * Private
+		 * The token stored.
+		 * false by default 
+		 */
+		token: {
+			type: String,
+			notify: true
+		},
+
+		/**
+		 * Constant
+		 * Local Storage key 
+		 */
+		KEY: {
+			type: String,
+			value: 'token'
+		},
+	},
+
+	ready: function() {
+		this._getToken()
+		this.listen(
+			window.top,
+			'token-changed',
+			'_getToken')
+	},
+
+	setToken: function(token){
+		localStorage.setItem(this.KEY, token)
+		this.fire('token-changed', this, {
+			node: window.top
+		})
+	},
+
+	_getToken: function(){
+		this.set('token',  localStorage.getItem(this.KEY))
+	},
+}
+
+</script>

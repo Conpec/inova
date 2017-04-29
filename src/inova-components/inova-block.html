@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/highcharts-chart/highcharts-chart.html">
+
+<dom-module id="inova-block">
+	<template>
+
+		<style>
+			:host {
+				display: inline-block;
+                position: relative;
+				margin: 2rem;
+				width: 12rem;
+				height: 6rem;
+			}
+            paper-card {
+                width: 100%;
+                height: 100%;
+				background-color: var(--default-primary-color);
+				--paper-card-header-color: var(--text-primary-color);
+            }
+		</style>
+
+		<a href="[[link]]">
+			<paper-card heading="[[title]]">
+
+			</paper-card>
+		</a>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'inova-block',
+
+			properties: {
+				title: String,
+				link: String
+			},
+
+		})
+	</script>
+</dom-module>

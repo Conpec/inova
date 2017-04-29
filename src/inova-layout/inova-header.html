@@ -9,6 +9,8 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../inova-components/inova-logo.html">
 
@@ -22,6 +24,11 @@
 		app-header {
 			background-color: var(--default-primary-color);
 			color: var(--text-primary-color);
+		}
+		app-header h1{
+			margin-left: 256px;
+			width: calc(100% - 256px);
+			text-align: center;
 		}
 		app-drawer {
 			z-index: 10;
@@ -53,11 +60,30 @@
 			text-decoration: none;
 			color: var(--text-primary-color);
 		}
+		paper-button {
+			color: var(--text-primary-color);
+			width: 100%;
+		}
 	</style>
+
+	<iron-ajax id="ajaxlogin"
+		url="[[config.url]]/task/token?login=[[txtUsername]]&domain=[[txtDomain]]&password=[[txtPassword]]"
+		handle-as="json"
+		method="post"
+		last-response="{{loginResponse}}"
+		last-error="{{loginError}}"
+		on-response="_loginResponse">
+	</iron-ajax>
+
+	<ce-json-file
+		path="/res/plots.json"
+		json="{{plots}}">
+	</ce-json-file>
 
 	<app-header-layout fullbleed>
 		<app-header shadow fixed>
 			<app-toolbar sticky>
+				<h1>[[title]]</h1>
 			</app-toolbar>
 		</app-header>
 	</app-header-layout>
@@ -70,17 +96,37 @@
 					<p>[[localize('title')]]</p>
 				</a>
 			</app-toolbar>
-			<iron-selector attr-for-selected="name" selected="{{page}}">
-				<app-toolbar class="drawer-option" name="questionario">
-					<a href="/dash1" tabindex="-1">[[localize('data1-title')]]</a>
+			<template is="dom-if" if="{{token}}">
+				<iron-selector attr-for-selected="name" selected="{{page}}">
+					<template is="dom-repeat" items="{{plotList}}">
+						<app-toolbar class="drawer-option" name="[[item.key]]">
+							<a href="/plot/[[item.key]]" tabindex="-1">[[item.value]]</a>
+						</app-toolbar>
+					</template>
+
+					<app-toolbar class="drawer-option">
+					</app-toolbar>
+				</iron-selector>
+
+				<app-toolbar class="drawer-option">
+					<paper-button on-click="_logout">[[localize('logout')]]</paper-button>
 				</app-toolbar>
-				<app-toolbar class="drawer-option" name="blog">
-					<a href="/dash2" tabindex="-1">[[localize('data2-title')]]</a>
+				
+			</template>
+			<template is="dom-if" if="{{!token}}">
+				<app-toolbar class="drawer-option">
+					<paper-input label="[[localize('username')]]" value="{{txtUsername}}"></paper-input>
 				</app-toolbar>
-				<app-toolbar class="drawer-option" name="contato">
-					<a href="/dash3" tabindex="-1">[[localize('data3-title')]]</a>
+				<app-toolbar class="drawer-option">
+					<paper-input label="[[localize('domain')]]" value="{{txtDomain}}"></paper-input>
 				</app-toolbar>
-			</iron-selector>
+				<app-toolbar class="drawer-option" name="dash2">
+					<paper-input label="[[localize('password')]]" type="password" value="{{txtPassword}}"></paper-input>
+				</app-toolbar>
+				<app-toolbar class="drawer-option" name="dash3">
+					<paper-button on-click="_login">[[localize('login')]]</paper-button>
+				</app-toolbar>
+			</template>
 		</app-drawer>
 	</app-drawer-layout>
 	</template>
@@ -90,7 +136,9 @@
 		is: 'inova-header',
 
 		behaviors: [
-			Inova.AppLocalizeBehavior
+			Inova.AppLocalizeBehavior,
+			Inova.AppConfigBehavior,
+			Inova.AppTokenBehavior
 		],
 
 		properties: {
@@ -98,10 +146,59 @@
 				type: String,
 				notify: false,
 			},
+			title: {
+				type: String,
+				computed: '_computeTitle(localize,page)'
+			},
 			file: {
-				value: 'pages'
+				value: 'header'
+			},
+			plots: Object,
+			plotList: {
+				type: Array,
+				computed: '_computePlotList(localize,plots)'
 			}
-		}
+		},
+
+		_computeTitle: function(localize, page) {
+			if(this.token){
+				return localize('title-' + page.substr(page.indexOf('/')+1))
+			}else{
+				return localize('title-__land__')
+			}
+		},
+
+		_initializeDefaultToken: function(){
+			this._logout()
+		},
+
+		_login: function(a, b){
+			this.$.ajaxlogin.generateRequest()
+		},
+
+		_logout: function(a, b){
+			this.setToken('')
+			if(page != '__home__'){
+				window.location = '/'
+			}
+		},
+
+		_loginResponse: function(e){
+			result = e.detail.response.result
+			if(result.statusCode == 200){
+				this.setToken(result.message)
+			}
+		},
+
+		_computePlotList: function(localize, plots) {
+			result = Object.keys(plots).map(function(key) {
+                return {
+                    key: key,
+                    value: localize('title-' + key)
+                }
+            })
+            return result
+        },
 	})
 	</script>
 </dom-module>
